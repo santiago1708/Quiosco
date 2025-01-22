@@ -1,4 +1,5 @@
 
+import { useStore } from "@/src/store"
 import { OrderItem } from "@/src/types"
 import { formatCurrency } from "@/src/utils"
 import { XCircleIcon, MinusIcon, PlusIcon } from "@heroicons/react/24/outline"
@@ -8,6 +9,9 @@ type ProductDetaillsProps = {
 }
 
 export default function ProductDetails({ item }: ProductDetaillsProps) {
+
+    const increaseQuantity = useStore(state => state.increaseQuantity)
+
     return (
         <div className="shadow space-y-1 p-4 bg-white  border-t border-gray-200 ">
             <div className="space-y-4">
@@ -38,7 +42,7 @@ export default function ProductDetails({ item }: ProductDetaillsProps) {
 
                     <button
                         type="button"
-                        onClick={() => { }}
+                        onClick={() => increaseQuantity(item.id)}
                     >
                         <PlusIcon className="h-6 w-6" />
                     </button>
