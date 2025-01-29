@@ -1,7 +1,8 @@
 "use client"
+import { useMemo } from "react"
+import { toast } from 'react-toastify'
 import { useStore } from "@/src/store"
 import ProductDetails from "./ProductDetails"
-import { useMemo } from "react"
 import { formatCurrency } from "@/src/utils"
 import { createOrder } from "@/actions/create-order-action"
 import { OrderSchema } from "@/src/schema"
@@ -10,16 +11,31 @@ import { OrderSchema } from "@/src/schema"
 export default function OrderSummary() {
 
     const order = useStore((state) => state.order)
-    const total = useMemo(() => order.reduce((total, item) => total + (item.quantity * item.price), 0),[order])
+    const total = useMemo(() => order.reduce((total, item) => total + (item.quantity * item.price), 0), [order])
 
-    const handleCreateOrder = (formData: FormData) => {
+    const handleCreateOrder = async (formData: FormData) => {
         const data = {
-            name: formData.get('name')
+            name: formData.get('name'),
+            total,
+            order
         }
         const result = OrderSchema.safeParse(data)
-        console.log(result);
+        if (!result.success) {
+            result.error.issues.forEach((issues) => {
+                toast.error(issues.message)
+            })
+            return
+        }
+
+        const response = await createOrder(data)
+        if(response?.errors){
+            response.errors.forEach((issues) => {
+                toast.error(issues.message)
+            })
+        }
         
-        createOrder()
+
+        createOrder(data)
     }
 
     return (
@@ -29,10 +45,10 @@ export default function OrderSummary() {
             {order.length === 0 ? <p className="text-center my-10">El pedido esta vacio</p> : (
                 <div className="mt-5">
                     {order.map((item) => (
-                        <ProductDetails 
+                        <ProductDetails
                             key={item.id}
                             item={item}
-                        /> 
+                        />
                     ))}
 
                     <p className="text-2xl mt-20 text-center">
@@ -40,23 +56,23 @@ export default function OrderSummary() {
                         <span className="font-black">{formatCurrency(total)}</span>
                     </p>
 
-                    <form 
+                    <form
                         action={handleCreateOrder}
                         className="w-full mt-10 space-y-5"
                     >
 
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             placeholder="Tu nombre"
                             className="bg-white border border-gray-100 p-2 w-full"
                             name="name"
                         />
 
 
-                        <input 
+                        <input
                             type="submit"
                             className="py-2 rounded uppercase text-white bg-black w-full text-center cursor-pointer font-bold"
-                            value='Confirmar pedido' 
+                            value='Confirmar pedido'
                         />
 
                     </form>
