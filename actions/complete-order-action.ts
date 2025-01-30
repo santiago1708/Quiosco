@@ -1,5 +1,5 @@
 "use server"
-
+import { revalidatePath } from 'next/cache'
 import { prisma } from "@/src/lib/prisma";
 import { OrderIdSchema } from "@/src/schema";
 
@@ -11,7 +11,7 @@ export async function completeOrder(formData: FormData) {
     }
 
     const result = OrderIdSchema.safeParse(data)
-    if(result.success) {
+    if (result.success) {
         try {
             await prisma.order.update({
                 where: {
@@ -22,10 +22,12 @@ export async function completeOrder(formData: FormData) {
                     orderReadyAt: new Date(Date.now())
                 }
             })
+
+            revalidatePath('/admin/orders')
         } catch (error) {
             console.log(error);
-            
+
         }
     }
-    
+
 }
