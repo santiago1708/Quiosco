@@ -11,19 +11,19 @@ export default function ImageUpload() {
 
     return (
         <CldUploadWidget
+            onSuccess={(result, { widget }) => {
+                if (result.event === 'success') {
+                    widget.close()
+                    // @ts-expect-error: Ignorar el error por types
+                    setImageUrl(result.info.secure_url)
+                }
+            }}
             uploadPreset="Quiosco"
             onUpload={(error, result) => {
                 if (error) {
                     console.error("Error uploading image:", error);
                 } else {
                     console.log("Image uploaded:", result);
-                }
-            }}
-            onSuccess={(result, { widget }) => {
-                if (result.event === "success") {
-                    widget.close()
-                    // @ts-expect-error: Ignorar el error por types
-                    setImageUrl(result.info.secure_url)
                 }
             }}
             options={{
@@ -44,13 +44,13 @@ export default function ImageUpload() {
                                 size={50}
                             />
                             <p className='text-lg font-semibold'>Agregar imagen</p>
-                            {imageUrl  && (
+                            {imageUrl && (
                                 <div
                                     className='absolute inset-0 w-full h-full'
                                 >
-                                    <Image 
+                                    <Image
                                         fill
-                                        style={{objectFit: 'contain'}}
+                                        style={{ objectFit: 'contain' }}
                                         src={imageUrl}
                                         alt='Imagen Producto'
                                     />
@@ -58,6 +58,8 @@ export default function ImageUpload() {
                             )}
                         </div>
                     </div>
+
+                    <input type="hidden" name='image' value={imageUrl} />
                 </>
             )}
         </CldUploadWidget>
