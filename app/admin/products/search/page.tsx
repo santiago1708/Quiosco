@@ -30,7 +30,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { sea
                 Resultados de Busqueda: {searchParams.search}
             </Heading>
 
-            <div className='flex flex-col gap-5 lg:flex-row lg:justify-end'>
+            <div className='flex flex-col gap-5 lg:flex-row lg:justify-end'> 
 
                 <ProductSearch />
             </div>
