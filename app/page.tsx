@@ -1,6 +1,6 @@
 
 export default function Home() {
   return (
-    <h1>Hola perras</h1>
+    <h1>Quiosco</h1>
   );
 }
