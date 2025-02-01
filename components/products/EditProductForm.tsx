@@ -1,14 +1,17 @@
 "use client"
-import { createProduct } from "@/actions/create-product-action"
 import { ProductSchema } from "@/src/schema"
 import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
-
+import { useParams } from 'next/navigation'
+import { updateProduct } from "@/actions/update-product-action"
 
 
 export default function EditProductForm({ children }: { children: React.ReactNode }) {
 
     const router = useRouter()
+    const params = useParams()
+
+    const id = +params.id!
 
     const handleSubmit = async (formData: FormData) => {
         const data = {
@@ -27,7 +30,7 @@ export default function EditProductForm({ children }: { children: React.ReactNod
             return
         }
 
-        const response = await createProduct(result.data)
+        const response = await updateProduct(result.data, id)
         if (response?.errors) {
             response.errors.forEach((issues) => {
                 toast.error(issues.message)
@@ -35,7 +38,7 @@ export default function EditProductForm({ children }: { children: React.ReactNod
             return
         }
 
-        toast.success('Producto creado con éxito!')
+        toast.success('Producto actualizado con éxito!')
         router.push('/admin/products')
     }
 
